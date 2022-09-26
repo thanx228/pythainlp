@@ -137,22 +137,21 @@ def extract_features(
     :return: list of lists of features to be fed to CRF
     """
     doc_features = []
-    doc = (
-        ["xxpad" for i in range(window)]
-        + doc
-        + ["xxpad" for i in range(window)]
-    )
+    doc = (["xxpad" for _ in range(window)] + doc) + [
+        "xxpad" for _ in range(window)
+    ]
+
 
     # add enders and starters
     doc_ender = []
     doc_starter = []
-    for i in range(len(doc)):
-        if doc[i] in _ENDERS:
+    for item in doc:
+        if item in _ENDERS:
             doc_ender.append("ender")
         else:
             doc_ender.append("normal")
 
-        if doc[i] in _STARTERS:
+        if item in _STARTERS:
             doc_starter.append("starter")
         else:
             doc_starter.append("normal")
@@ -189,10 +188,7 @@ def segment(text: str) -> List[str]:
     :param str text: text to be tokenized to sentences
     :return: list of words, tokenized from the text
     """
-    if isinstance(text, str):
-        toks = word_tokenize(text)
-    else:
-        toks = text
+    toks = word_tokenize(text) if isinstance(text, str) else text
     feat = extract_features(toks)
     labs = _tagger.tag(feat)
     labs[-1] = "E"  # make sure it cuts the last sentence

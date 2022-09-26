@@ -93,15 +93,16 @@ def summarize(
     sents = []
 
     if engine == DEFAULT_SUMMARIZE_ENGINE:
-        sents = FrequencySummarizer().summarize(text, n, tokenizer)
+        return FrequencySummarizer().summarize(text, n, tokenizer)
     elif engine == CPE_KMUTT_THAI_SENTENCE_SUM:
         from .mt5 import mT5Summarizer
-        sents = mT5Summarizer(pretrained_mt5_model_name=CPE_KMUTT_THAI_SENTENCE_SUM, min_length=5).summarize(text)
+        return mT5Summarizer(
+            pretrained_mt5_model_name=CPE_KMUTT_THAI_SENTENCE_SUM, min_length=5
+        ).summarize(text)
+
     elif engine.startswith('mt5-') or engine == "mt5":
         size = engine.replace('mt5-', '')
         from .mt5 import mT5Summarizer
-        sents = mT5Summarizer(model_size=size).summarize(text)
+        return mT5Summarizer(model_size=size).summarize(text)
     else:  # if engine not found, return first n sentences
-        sents = sent_tokenize(text, engine="whitespace+newline")[:n]
-
-    return sents
+        return sent_tokenize(text, engine="whitespace+newline")[:n]

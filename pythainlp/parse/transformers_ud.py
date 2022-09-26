@@ -27,7 +27,7 @@ from transformers.utils import cached_file
 
 class Parse:
     def __init__(self, model: str="KoichiYasuoka/deberta-base-thai-ud-head") -> None:
-        if model == None:
+        if model is None:
             model = "KoichiYasuoka/deberta-base-thai-ud-head"
         self.tokenizer=AutoTokenizer.from_pretrained(model)
         self.model=AutoModelForQuestionAnswering.from_pretrained(model)
@@ -49,15 +49,15 @@ class Parse:
             tokenizer=self.tokenizer
         )
 
-    def __call__(self, text: str, tag: str="str")->Union[List[List[str]], str]:
+    def __call__(self, text: str, tag: str="str") -> Union[List[List[str]], str]:
         w=[(t["start"],t["end"],t["entity_group"]) for t in self.deprel(text)]
         z,n={t["start"]:t["entity"].split("|") for t in self.tagger(text)},len(w)
         r,m=[text[s:e] for s,e,p in w],numpy.full((n+1,n+1),numpy.nan)
         v,c=self.tokenizer(r,add_special_tokens=False)["input_ids"],[]
         for i,t in enumerate(v):
             q=[self.tokenizer.cls_token_id]+t+[self.tokenizer.sep_token_id]
-            c.append([q]+v[0:i]+[[self.tokenizer.mask_token_id]]+v[i+1:]+[[q[-1]]])
-        b=[[len(sum(x[0:j+1],[])) for j in range(len(x))] for x in c]
+            c.append([q] + v[:i] + [[self.tokenizer.mask_token_id]] + v[i+1:] + [[q[-1]]])
+        b = [[len(sum(x[:j+1], [])) for j in range(len(x))] for x in c]
         with torch.no_grad():
             d=self.model(
                 input_ids=torch.tensor([sum(x,[]) for x in c]),

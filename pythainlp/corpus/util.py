@@ -56,11 +56,7 @@ def find_badwords(
                 wrong[w] += 1
 
     # if wrong more than right, then it's a bad word
-    bad_words = []
-    for w, count in wrong.items():
-        if count > right[w]:
-            bad_words.append(w)
-
+    bad_words = [w for w, count in wrong.items() if count > right[w]]
     return set(bad_words)
 
 

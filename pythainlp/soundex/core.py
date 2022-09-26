@@ -66,11 +66,10 @@ def soundex(text: str, engine: str = DEFAULT_SOUNDEX_ENGINE, length: int = 4) ->
         # output: '11'
     """
     if engine == "lk82":
-        _soundex = lk82(text)
-    elif engine == "prayut_and_somchaip":
-        _soundex = prayut_and_somchaip(text, length=length)
+        return lk82(text)
     elif engine == "metasound":
-        _soundex = metasound(text, length=length)
-    else:  # default, use "udom83"
-        _soundex = udom83(text)
-    return _soundex
+        return metasound(text, length=length)
+    elif engine == "prayut_and_somchaip":
+        return prayut_and_somchaip(text, length=length)
+    else:
+        return udom83(text)

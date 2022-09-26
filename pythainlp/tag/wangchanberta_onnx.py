@@ -46,8 +46,7 @@ class WngchanBerta_ONNX:
 
     def build_tokenizer(self, sent):
         _t = [5]+[i+4 for i in self.sp.encode(sent)]+[6]
-        model_inputs = {}
-        model_inputs["input_ids"] = np.array([_t], dtype=np.int64)
+        model_inputs = {"input_ids": np.array([_t], dtype=np.int64)}
         model_inputs["attention_mask"] = np.array(
             [[1]*len(_t)], dtype=np.int64
         )
@@ -57,25 +56,20 @@ class WngchanBerta_ONNX:
         logits_t = logits_data[0]
         maxes = np.max(logits_t, axis=-1, keepdims=True)
         shifted_exp = np.exp(logits_t - maxes)
-        scores = shifted_exp / shifted_exp.sum(axis=-1, keepdims=True)
-        return scores
+        return shifted_exp / shifted_exp.sum(axis=-1, keepdims=True)
 
     def clean_output(self, list_text):
         return list_text
 
     def totag(self, post, sent):
-        tag = []
         _s = self.sp.EncodeAsPieces(sent)
-        for i in range(len(_s)):
-            tag.append(
-                (
-                    _s[i],
-                    self.id2tag[
-                        str(list(post[i+1]).index(max(list(post[i+1]))))
-                    ]
-                )
+        return [
+            (
+                _s[i],
+                self.id2tag[str(list(post[i + 1]).index(max(list(post[i + 1]))))],
             )
-        return tag
+            for i in range(len(_s))
+        ]
 
     def _config(self, list_ner):
         return list_ner
@@ -87,26 +81,25 @@ class WngchanBerta_ONNX:
             input_feed=self._s
         )[0]
         _tag = self.clean_output(self.totag(self.postprocess(logits), text))
-        if tag:
-            _tag = self._config(_tag)
-            temp = ""
-            sent = ""
-            for idx, (word, ner) in enumerate(_tag):
-                if ner.startswith("B-") and temp != "":
-                    sent += "</" + temp + ">"
-                    temp = ner[2:]
-                    sent += "<" + temp + ">"
-                elif ner.startswith("B-"):
-                    temp = ner[2:]
-                    sent += "<" + temp + ">"
-                elif ner == "O" and temp != "":
-                    sent += "</" + temp + ">"
-                    temp = ""
-                sent += word
-
-                if idx == len(_tag) - 1 and temp != "":
-                    sent += "</" + temp + ">"
-
-            return sent
-        else:
+        if not tag:
             return _tag
+        _tag = self._config(_tag)
+        temp = ""
+        sent = ""
+        for idx, (word, ner) in enumerate(_tag):
+            if ner.startswith("B-") and temp != "":
+                sent += f"</{temp}>"
+                temp = ner[2:]
+                sent += f"<{temp}>"
+            elif ner.startswith("B-"):
+                temp = ner[2:]
+                sent += f"<{temp}>"
+            elif ner == "O" and temp != "":
+                sent += f"</{temp}>"
+                temp = ""
+            sent += word
+
+            if idx == len(_tag) - 1 and temp != "":
+                sent += f"</{temp}>"
+
+        return sent

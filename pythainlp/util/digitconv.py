@@ -158,10 +158,7 @@ def text_to_arabic_digit(text: str) -> str:
         text_to_arabic_digit("เก้าร้อย") == ""
         # output: True
     """
-    if not text or text not in _spell_digit:
-        return ""
-
-    return _spell_digit[text]
+    return "" if not text or text not in _spell_digit else _spell_digit[text]
 
 
 def text_to_thai_digit(text: str) -> str:

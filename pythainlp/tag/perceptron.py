@@ -59,16 +59,13 @@ def tag(words: List[str], corpus: str = "pud") -> List[Tuple[str, str]]:
     if not words:
         return []
 
-    to_ud = False
-    if corpus[-3:] == "_ud":
-        to_ud = True
-
+    to_ud = bool(corpus.endswith("_ud"))
     word_tags = []
-    if corpus == "orchid" or corpus == "orchid_ud":
+    if corpus in {"orchid", "orchid_ud"}:
         words = orchid.pre_process(words)
         word_tags = _orchid_tagger().tag(words)
         word_tags = orchid.post_process(word_tags, to_ud)
-    elif corpus == "lst20" or corpus == "lst20_ud":
+    elif corpus in {"lst20", "lst20_ud"}:
         words = lst20.pre_process(words)
         word_tags = _lst20_tagger().tag(words)
         word_tags = lst20.post_process(word_tags, to_ud)

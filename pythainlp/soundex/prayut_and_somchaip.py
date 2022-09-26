@@ -47,10 +47,11 @@ def prayut_and_somchaip(text: str, length: int = 4) -> str:
         return ""
     text = text.upper()
     # keep only consonants (English-Thai)
-    chars = []
-    for ch in text:
-        if ch in thai_characters+"ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-            chars.append(ch)
+    chars = [
+        ch
+        for ch in text
+        if ch in f"{thai_characters}ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    ]
 
     i = 0
     while i < len(chars):

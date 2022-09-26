@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 # defined strings for special characters
 CHAR_TO_ESCAPE = {" ": "_"}
-ESCAPE_TO_CHAR = dict((v, k) for k, v in CHAR_TO_ESCAPE.items())
+ESCAPE_TO_CHAR = {v: k for k, v in CHAR_TO_ESCAPE.items()}
 
 
 # map from LST20 POS tag to Universal POS tag
@@ -50,16 +50,18 @@ def post_process(
     """
     keys = ESCAPE_TO_CHAR.keys()
 
-    if not to_ud:
-        word_tags = [
-            (ESCAPE_TO_CHAR[word], tag) if word in keys else (word, tag)
-            for word, tag in word_tags
-        ]
-    else:
-        word_tags = [
+    word_tags = (
+        [
             (ESCAPE_TO_CHAR[word], TO_UD[tag])
             if word in keys
             else (word, TO_UD[tag])
             for word, tag in word_tags
         ]
+        if to_ud
+        else [
+            (ESCAPE_TO_CHAR[word], tag) if word in keys else (word, tag)
+            for word, tag in word_tags
+        ]
+    )
+
     return word_tags

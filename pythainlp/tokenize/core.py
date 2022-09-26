@@ -63,7 +63,7 @@ def word_detokenize(segments: Union[List[List[str]], List[str]], output: str = "
     _list_all = []
     if isinstance(segments[0], str):
         segments = [segments]
-    for i, s in enumerate(segments):
+    for s in segments:
         _list_sents = []
         _add_index = []
         _space_index = []
@@ -97,14 +97,8 @@ def word_detokenize(segments: Union[List[List[str]], List[str]], output: str = "
         _list_all.append(_list_sents)
     if output == "list":
         return _list_all
-    else:
-        _text = []
-        for i in _list_all:
-            _temp = ""
-            for j in i:
-                _temp += j
-            _text.append(_temp)
-        return ' '.join(_text)
+    _text = ["".join(i) for i in _list_all]
+    return ' '.join(_text)
 
 
 def word_tokenize(
@@ -208,7 +202,7 @@ def word_tokenize(
 
     segments = []
 
-    if engine == "newmm" or engine == "onecut":
+    if engine in {"newmm", "onecut"}:
         from pythainlp.tokenize.newmm import segment
 
         segments = segment(text, custom_dict)
@@ -224,7 +218,7 @@ def word_tokenize(
         from pythainlp.tokenize.longest import segment
 
         segments = segment(text, custom_dict)
-    elif engine == "mm" or engine == "multi_cut":
+    elif engine in {"mm", "multi_cut"}:
         from pythainlp.tokenize.multi_cut import segment
 
         segments = segment(text, custom_dict)
@@ -260,7 +254,7 @@ def word_tokenize(
         from pythainlp.tokenize.nlpo3 import segment
         if isinstance(custom_dict, str):
             segments = segment(text, custom_dict=custom_dict)
-        elif not isinstance(custom_dict, str) and custom_dict is not None:
+        elif custom_dict is not None:
             raise ValueError(
                 f"""Tokenizer \"{engine}\":
                 custom_dict must be a str.
@@ -356,18 +350,18 @@ def sent_tokenize(
         from pythainlp.tokenize.crfcut import segment
 
         segments = segment(text)
-    elif engine == "whitespace":
-        segments = re.split(r" +", text, re.U)
-    elif engine == "whitespace+newline":
-        segments = text.split()
-    elif engine == "tltk":
-        from pythainlp.tokenize.tltk import sent_tokenize as segment
-
-        segments = segment(text)
     elif engine == "thaisum":
         from pythainlp.tokenize.thaisumcut import ThaiSentenceSegmentor as segmentor
         segment = segmentor()
         segments = segment.split_into_sentences(text)
+    elif engine == "tltk":
+        from pythainlp.tokenize.tltk import sent_tokenize as segment
+
+        segments = segment(text)
+    elif engine == "whitespace":
+        segments = re.split(r" +", text, re.U)
+    elif engine == "whitespace+newline":
+        segments = text.split()
     else:
         raise ValueError(
             f"""Tokenizer \"{engine}\" not found.
@@ -458,13 +452,7 @@ def subword_tokenize(
 
     segments = []
 
-    if engine == "tcc":
-        from pythainlp.tokenize.tcc import segment
-    elif engine == "etcc":
-        from pythainlp.tokenize.etcc import segment
-    elif engine == "wangchanberta":
-        from pythainlp.wangchanberta import segment
-    elif engine == "dict":  # use syllable dictionary
+    if engine == "dict":
         words = word_tokenize(text)
         for word in words:
             segments.extend(
@@ -472,17 +460,23 @@ def subword_tokenize(
                     text=word, custom_dict=DEFAULT_SYLLABLE_DICT_TRIE
                 )
             )
+    elif engine == "etcc":
+        from pythainlp.tokenize.etcc import segment
     elif engine == "ssg":
         from pythainlp.tokenize.ssg import segment
+    elif engine == "tcc":
+        from pythainlp.tokenize.tcc import segment
     elif engine == "tltk":
         from pythainlp.tokenize.tltk import syllable_tokenize as segment
+    elif engine == "wangchanberta":
+        from pythainlp.wangchanberta import segment
     else:
         raise ValueError(
             f"""Tokenizer \"{engine}\" not found.
             It might be a typo; if not, please consult our document."""
         )
 
-    if segments == []:
+    if not segments:
         segments = segment(text)
 
     if not keep_whitespace:

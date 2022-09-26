@@ -2,6 +2,7 @@
 """
 Data preprocessing for ORCHID corpus
 """
+
 from typing import List, Tuple
 
 # defined strings for special characters,
@@ -31,7 +32,7 @@ CHAR_TO_ESCAPE = {
     ";": "<semi_colon>",
     "/": "<slash>",
 }
-ESCAPE_TO_CHAR = dict((v, k) for k, v in CHAR_TO_ESCAPE.items())
+ESCAPE_TO_CHAR = {v: k for k, v in CHAR_TO_ESCAPE.items()}
 
 # map from ORCHID POS tag to Universal POS tag
 # from Korakot Chaovavanich
@@ -117,10 +118,7 @@ TO_UD = {
 
 
 def ud_exception(w: str, tag: str) -> str:
-    if w == "การ" or w == "ความ":
-        return "NOUN"
-
-    return tag
+    return "NOUN" if w in {"การ", "ความ"} else tag
 
 
 def pre_process(words: List[str]) -> List[str]:
@@ -144,16 +142,18 @@ def post_process(
     """
     keys = ESCAPE_TO_CHAR.keys()
 
-    if not to_ud:
-        word_tags = [
-            (ESCAPE_TO_CHAR[word], tag) if word in keys else (word, tag)
-            for word, tag in word_tags
-        ]
-    else:
-        word_tags = [
+    word_tags = (
+        [
             (ESCAPE_TO_CHAR[word], ud_exception(word, TO_UD[tag]))
             if word in keys
             else (word, ud_exception(word, TO_UD[tag]))
             for word, tag in word_tags
         ]
+        if to_ud
+        else [
+            (ESCAPE_TO_CHAR[word], tag) if word in keys else (word, tag)
+            for word, tag in word_tags
+        ]
+    )
+
     return word_tags

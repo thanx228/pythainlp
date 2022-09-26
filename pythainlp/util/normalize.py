@@ -279,7 +279,7 @@ def maiyamok(sent: Union[str, List[str]]) -> List[str]:
             continue
         if " ๆ" in text:
             text = text.replace(" ๆ", "ๆ")
-        if "ๆ" == text:
+        if text == "ๆ":
             text = _list_word[i-1]
         elif "ๆ" in text:
             text = text.replace("ๆ", "")

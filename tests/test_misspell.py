@@ -6,14 +6,7 @@ from pythainlp.tools import misspell
 
 
 def _count_difference(st1, st2):
-    # this assumes len(st1) == len(st2)
-
-    count = 0
-    for i in range(len(st1)):
-        if st1[i] != st2[i]:
-            count += 1
-
-    return count
+    return sum(st1[i] != st2[i] for i in range(len(st1)))
 
 
 class TestTextMisspellPackage(unittest.TestCase):

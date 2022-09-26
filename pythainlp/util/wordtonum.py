@@ -51,10 +51,23 @@ def _check_is_thainum(word: str):
     for j in list(_digits.keys()):
         if j in word:
             return (True, 'num')
-    for j in ["สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน", "จุด", "ลบ"]:
-        if j in word:
-            return (True, 'unit')
-    return (False, None)
+    return next(
+        (
+            (True, 'unit')
+            for j in [
+                "สิบ",
+                "ร้อย",
+                "พัน",
+                "หมื่น",
+                "แสน",
+                "ล้าน",
+                "จุด",
+                "ลบ",
+            ]
+            if j in word
+        ),
+        (False, None),
+    )
 
 
 _dict_words = [i for i in list(thai_words()) if not _check_is_thainum(i)[0]]

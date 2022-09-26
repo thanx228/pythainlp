@@ -117,6 +117,4 @@ def gen_sentence(
       min_p=prob,
       sep='-*-'
     ).split('-*-')
-    if output_str:
-        return ''.join(list_word)
-    return list_word
+    return ''.join(list_word) if output_str else list_word

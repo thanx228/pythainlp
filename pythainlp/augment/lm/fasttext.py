@@ -44,13 +44,10 @@ class FastTextAug:
         list_sent_new = []
         for i in sent:
             if i in self.dict_wv:
-                w = [
-                    j for j, v in self.model.most_similar(i) if v >= p
-                ]
-                if w == []:
-                    list_sent_new.append([i])
-                else:
+                if w := [j for j, v in self.model.most_similar(i) if v >= p]:
                     list_sent_new.append(w)
+                else:
+                    list_sent_new.append([i])
             else:
                 list_sent_new.append([i])
         return list_sent_new
@@ -73,7 +70,4 @@ class FastTextAug:
         """
         self.sentence = self.tokenize(sentence)
         self.list_synonym = self.modify_sent(self.sentence, p=p)
-        new_sentences = []
-        for x in list(itertools.product(*self.list_synonym))[0:n_sent]:
-            new_sentences.append(x)
-        return new_sentences
+        return list(list(itertools.product(*self.list_synonym))[:n_sent])

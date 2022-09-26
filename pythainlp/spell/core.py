@@ -58,17 +58,15 @@ def spell(word: str, engine: str = "pn") -> List[str]:
     """
     if engine == "phunspell":
         from pythainlp.spell.phunspell import spell as SPELL_CHECKER
-        text_correct = SPELL_CHECKER(word)
+        return SPELL_CHECKER(word)
     elif engine == "symspellpy":
         from pythainlp.spell.symspellpy import spell as SPELL_CHECKER
-        text_correct = SPELL_CHECKER(word)
+        return SPELL_CHECKER(word)
     elif engine == "tltk":
         from pythainlp.spell.tltk import spell as SPELL_CHECKER
-        text_correct = SPELL_CHECKER(word)
+        return SPELL_CHECKER(word)
     else:
-        text_correct = DEFAULT_SPELL_CHECKER.spell(word)
-
-    return text_correct
+        return DEFAULT_SPELL_CHECKER.spell(word)
 
 
 def correct(word: str, engine: str = "pn") -> str:
@@ -106,14 +104,12 @@ def correct(word: str, engine: str = "pn") -> str:
     """
     if engine == "phunspell":
         from pythainlp.spell.phunspell import correct as SPELL_CHECKER
-        text_correct = SPELL_CHECKER(word)
+        return SPELL_CHECKER(word)
     elif engine == "symspellpy":
         from pythainlp.spell.symspellpy import correct as SPELL_CHECKER
-        text_correct = SPELL_CHECKER(word)
+        return SPELL_CHECKER(word)
     else:
-        text_correct = DEFAULT_SPELL_CHECKER.correct(word)
-
-    return text_correct
+        return DEFAULT_SPELL_CHECKER.correct(word)
 
 
 def spell_sent(list_words: List[str], engine: str = "pn") -> List[List[str]]:
@@ -138,19 +134,12 @@ def spell_sent(list_words: List[str], engine: str = "pn") -> List[List[str]]:
     """
     if engine == "symspellpy":
         from pythainlp.spell.symspellpy import spell_sent as symspellpy_spell
-        list_new = symspellpy_spell(list_words)
+        return symspellpy_spell(list_words)
     else:
         _temp = list(
             itertools.product(*[spell(i, engine=engine) for i in list_words])
         )
-        list_new = []
-        for i in _temp:
-            _temp2 = []
-            for j in i:
-                _temp2.append(j)
-            list_new.append(_temp2)
-
-    return list_new
+        return [list(i) for i in _temp]
 
 
 def correct_sent(list_words: List[str], engine: str = "pn") -> List[str]:

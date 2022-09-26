@@ -282,7 +282,6 @@ def remove_space(toks: Collection[str]) -> List[str]:
     """
     res = []
     for t in toks:
-        t = t.strip()
-        if t:
+        if t := t.strip():
             res.append(t)
     return res

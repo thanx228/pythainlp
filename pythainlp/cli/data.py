@@ -77,8 +77,7 @@ class App:
             "dataset_name", type=str, help="dataset/corpus's name",
         )
         args = parser.parse_args(argv[3:])
-        info = corpus.get_corpus_db_detail(args.dataset_name)
-        if info:
+        if info := corpus.get_corpus_db_detail(args.dataset_name):
             print(info)
         else:
             print("Not found.")
@@ -91,8 +90,7 @@ class App:
         print("Dataset/corpus available for download:")
         for name in corpus_names:
             print(f"- {name} {corpus_db[name]['latest_version']}", end="")
-            corpus_info = corpus.get_corpus_db_detail(name)
-            if corpus_info:
+            if corpus_info := corpus.get_corpus_db_detail(name):
                 print(f"  (Local: {corpus_info['version']})")
             else:
                 print()

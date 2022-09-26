@@ -86,8 +86,7 @@ class AveragedPerceptron(object):
                 param = (feat, clas)
                 total = self._totals[param]
                 total += (self.i - self._tstamps[param]) * weight
-                averaged = round(total / float(self.i), 3)
-                if averaged:
+                if averaged := round(total / float(self.i), 3):
                     new_feat_weights[clas] = averaged
             self.weights[feat] = new_feat_weights
 
@@ -189,10 +188,12 @@ class PerceptronTagger:
 
         # save the model
         if save_loc is not None:
-            data = {}
-            data["weights"] = self.model.weights
-            data["tagdict"] = self.tagdict
-            data["classes"] = list(self.classes)
+            data = {
+                "weights": self.model.weights,
+                "tagdict": self.tagdict,
+                "classes": list(self.classes),
+            }
+
             with open(save_loc, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False)
 

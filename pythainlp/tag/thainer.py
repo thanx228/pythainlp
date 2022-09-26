@@ -49,7 +49,7 @@ def _doc2features(doc, i) -> Dict:
             "word.prevpostag": prevpostag,
             "word.prevwordisdigit": prevword.isdigit(),
         }
-        features.update(prev_features)
+        features |= prev_features
     else:
         features["BOS"] = True  # Special "Beginning of Sequence" tag
 
@@ -65,7 +65,7 @@ def _doc2features(doc, i) -> Dict:
             "word.nextstopword": _is_stopword(nextword),
             "word.nextwordisdigit": nextword.isdigit(),
         }
-        features.update(next_features)
+        features |= next_features
     else:
         features["EOS"] = True  # Special "End of Sequence" tag
 
@@ -178,19 +178,19 @@ class ThaiNameTagger:
             sent = ""
             for idx, (word, ner) in enumerate(sent_ner):
                 if ner.startswith("B-") and temp != "":
-                    sent += "</" + temp + ">"
+                    sent += f"</{temp}>"
                     temp = ner[2:]
-                    sent += "<" + temp + ">"
+                    sent += f"<{temp}>"
                 elif ner.startswith("B-"):
                     temp = ner[2:]
-                    sent += "<" + temp + ">"
+                    sent += f"<{temp}>"
                 elif ner == "O" and temp != "":
-                    sent += "</" + temp + ">"
+                    sent += f"</{temp}>"
                     temp = ""
                 sent += word
 
                 if idx == len(sent_ner) - 1 and temp != "":
-                    sent += "</" + temp + ">"
+                    sent += f"</{temp}>"
 
             return sent
 

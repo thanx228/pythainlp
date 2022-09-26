@@ -38,10 +38,10 @@ hp = _Hparams()
 
 def _load_vocab():
     g2idx = {g: idx for idx, g in enumerate(hp.graphemes)}
-    idx2g = {idx: g for idx, g in enumerate(hp.graphemes)}
+    idx2g = dict(enumerate(hp.graphemes))
 
     p2idx = {p: idx for idx, p in enumerate(hp.phonemes)}
-    idx2p = {idx: p for idx, p in enumerate(hp.phonemes)}
+    idx2p = dict(enumerate(hp.phonemes))
     # note that g and p mean grapheme and phoneme, respectively.
     return g2idx, idx2g, p2idx, idx2p
 
@@ -133,7 +133,7 @@ class Thai_W2P(object):
         self.word = word
         if self.word.endswith("."):
             self.word = self.word.replace(".", "")
-            self.word = "-".join([i + "อ" for i in list(self.word)])
+            self.word = "-".join([f"{i}อ" for i in list(self.word)])
             return self.word
         return None
 
@@ -181,10 +181,11 @@ class Thai_W2P(object):
         return preds
 
     def __call__(self, word: str) -> str:
-        if not any(letter in word for letter in self.graphemes):
-            pron = [word]
-        else:  # predict for oov
-            pron = self._predict(word)
+        pron = (
+            self._predict(word)
+            if any(letter in word for letter in self.graphemes)
+            else [word]
+        )
 
         return "".join(pron)
 

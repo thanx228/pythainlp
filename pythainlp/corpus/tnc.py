@@ -61,7 +61,7 @@ def bigram_word_freqs() -> defaultdict:
     _path = get_corpus_path(_BIGRAM)
     _word_freqs = defaultdict(int)
     with open(_path, "r", encoding="utf-8-sig") as fh:
-        for i in fh.readlines():
+        for i in fh:
             _temp = i.strip().split("	")
             _word_freqs[(_temp[0], _temp[1])] = int(_temp[-1])
 
@@ -75,7 +75,7 @@ def trigram_word_freqs() -> defaultdict:
     _path = get_corpus_path(_TRIGRAM)
     _word_freqs = defaultdict(int)
     with open(_path, "r", encoding="utf-8-sig") as fh:
-        for i in fh.readlines():
+        for i in fh:
             _temp = i.strip().split("	")
             _word_freqs[(_temp[0], _temp[1], _temp[2])] = int(_temp[-1])
 

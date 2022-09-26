@@ -46,8 +46,10 @@ class PosTagTransformers:
         self, text: str, corpus: str = "lst20", grouped_word: bool = False
     ) -> List[Tuple[str, str]]:
         if (
-            corpus != self.corpus and corpus in ['lst20']
-        ) or grouped_word != self.grouped_word:
+            corpus != self.corpus
+            and corpus in {'lst20'}
+            or grouped_word != self.grouped_word
+        ):
             self.grouped_word = grouped_word
             self.corpus = corpus
             self.load()

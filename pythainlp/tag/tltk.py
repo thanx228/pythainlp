@@ -73,19 +73,19 @@ def get_ner(
         sent = ""
         for idx, (word, pos, ner) in enumerate(sent_ner):
             if ner.startswith("B-") and temp != "":
-                sent += "</" + temp + ">"
+                sent += f"</{temp}>"
                 temp = ner[2:]
-                sent += "<" + temp + ">"
+                sent += f"<{temp}>"
             elif ner.startswith("B-"):
                 temp = ner[2:]
-                sent += "<" + temp + ">"
+                sent += f"<{temp}>"
             elif ner == "O" and temp != "":
-                sent += "</" + temp + ">"
+                sent += f"</{temp}>"
                 temp = ""
             sent += word
 
             if idx == len(sent_ner) - 1 and temp != "":
-                sent += "</" + temp + ">"
+                sent += f"</{temp}>"
 
         return sent
     if pos is False:
