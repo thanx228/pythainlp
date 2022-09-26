@@ -31,9 +31,7 @@ _RE_ENDING_CHAR = re.compile(_PAT_ENDING_CHAR)
 def _cut_subword(tokens: List[str]) -> List[str]:
     len_tokens = len(tokens)
     i = 0
-    while True:
-        if i == len_tokens:
-            break
+    while i != len_tokens:
         if _RE_ENDING_CHAR.search(tokens[i]) and i > 0 and len(tokens[i]) == 1:
             tokens[i - 1] += tokens[i]
             del tokens[i]

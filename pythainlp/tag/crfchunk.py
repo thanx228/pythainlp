@@ -48,7 +48,7 @@ def _doc2features(tokens: List[Tuple[str, str]], index: int) -> Dict:
 
 
 def extract_features(doc):
-    return [_doc2features(doc, i) for i in range(0, len(doc))]
+    return [_doc2features(doc, i) for i in range(len(doc))]
 
 
 class CRFchunk:

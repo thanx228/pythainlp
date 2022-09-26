@@ -116,12 +116,4 @@ def is_native_thai(word: str) -> bool:
         return True
 
     # If a word ends with native final, it can be a native Thai
-    if word[-1] in _TH_NATIVE_FINALS:
-        return True
-
-    # Note: This will not work, as it check the whole word, not the prefix.
-    # Prefix-sentitive tokenization is required in order to able to check this.
-    if word in _TH_PREFIX_DIPHTHONG:
-        return True
-
-    return False
+    return True if word[-1] in _TH_NATIVE_FINALS else word in _TH_PREFIX_DIPHTHONG

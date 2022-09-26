@@ -3,6 +3,7 @@
 Common list of words.
 """
 
+
 __all__ = [
     "countries",
     "provinces",
@@ -23,7 +24,7 @@ _THAI_COUNTRIES = set()
 _THAI_COUNTRIES_FILENAME = "countries_th.txt"
 
 _THAI_THAILAND_PROVINCES = set()
-_THAI_THAILAND_PROVINCES_DETAILS = list()
+_THAI_THAILAND_PROVINCES_DETAILS = []
 _THAI_THAILAND_PROVINCES_FILENAME = "thailand_provinces_th.csv"
 
 _THAI_SYLLABLES = set()
@@ -83,17 +84,12 @@ def provinces(details: bool = False) -> Union[FrozenSet[str], List[str]]:
 
     if not _THAI_THAILAND_PROVINCES or not _THAI_THAILAND_PROVINCES_DETAILS:
         provs = set()
-        prov_details = list()
+        prov_details = []
 
         for line in get_corpus(_THAI_THAILAND_PROVINCES_FILENAME, as_is=True):
             p = line.split(",")
 
-            prov = dict()
-            prov["name_th"] = p[0]
-            prov["abbr_th"] = p[1]
-            prov["name_en"] = p[2]
-            prov["abbr_en"] = p[3]
-
+            prov = {"name_th": p[0], "abbr_th": p[1], "name_en": p[2], "abbr_en": p[3]}
             provs.add(prov["name_th"])
             prov_details.append(prov)
 

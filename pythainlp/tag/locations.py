@@ -28,8 +28,7 @@ def tag_provinces(tokens: List[str]) -> List[Tuple[str, str]]:
         # output: [('หนองคาย', 'B-LOCATION'), ('น่าอยู่', 'O')]
     """
     province_list = provinces()
-    output = [
+    return [
         (token, "B-LOCATION") if token in province_list else (token, "O")
         for token in tokens
     ]
-    return output

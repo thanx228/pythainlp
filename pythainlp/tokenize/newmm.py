@@ -92,31 +92,21 @@ def _onecut(text: str, custom_dict: Trie) -> Generator[str, None, None]:
                     break
 
         len_pos_list = len(pos_list)
-        if len_pos_list == 1:  # one candidate, no longer ambiguous
-            end_pos_candidates = next(
-                _bfs_paths_graph(graph, end_pos, pos_list[0])
-            )
-            graph_size = 0
-            for pos in end_pos_candidates[1:]:
-                yield text[end_pos:pos]
-                end_pos = pos
-        elif len_pos_list == 0:  # no candidate, deal with non-dictionary word
-            m = _PAT_NONTHAI.match(text[begin_pos:])
-            if m:  # non-Thai token, skip to the end
+        if len_pos_list == 0:
+            if m := _PAT_NONTHAI.match(text[begin_pos:]):
                 end_pos = begin_pos + m.end()
-            else:  # Thai token, find minimum skip
+            else:
                 for pos in range(begin_pos + 1, len_text):
                     if pos in valid_poss:
                         prefix = text[pos:]
-                        words = [
+                        if words := [
                             word
                             for word in custom_dict.prefixes(prefix)
                             if (
                                 (pos + len(word) in valid_poss)
                                 and not _PAT_THAI_TWOCHARS.match(word)
                             )
-                        ]
-                        if words:  # is a Thai token that longer than 2 chars
+                        ]:
                             end_pos = pos
                             break
 
@@ -131,6 +121,14 @@ def _onecut(text: str, custom_dict: Trie) -> Generator[str, None, None]:
             graph_size = graph_size + 1
             yield text[begin_pos:end_pos]
             heappush(pos_list, end_pos)
+        elif len_pos_list == 1:
+            end_pos_candidates = next(
+                _bfs_paths_graph(graph, end_pos, pos_list[0])
+            )
+            graph_size = 0
+            for pos in end_pos_candidates[1:]:
+                yield text[end_pos:pos]
+                end_pos = pos
 
 
 def segment(
@@ -189,7 +187,7 @@ def segment(
 
             # choose the position that covers longest token
             cut_pos = _TEXT_SCAN_BEGIN
-            for i in range(0, token_max_idx):
+            for i in range(token_max_idx):
                 cut_pos = cut_pos + len(tokens[i])
 
         text_parts.append(text[:cut_pos])

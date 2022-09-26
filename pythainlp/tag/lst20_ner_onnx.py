@@ -31,7 +31,4 @@ class LST20_NER_ONNX(WngchanBerta_ONNX):
         return new_list
 
     def _config(self, list_ner):
-        _n = []
-        for i, j in list_ner:
-            _n.append((i, j.replace('E_', 'I_').replace('_', '-')))
-        return _n
+        return [(i, j.replace('E_', 'I_').replace('_', '-')) for i, j in list_ner]

@@ -62,8 +62,7 @@ def bahttext(number: float) -> str:
         num_int = int(num_int)
         num_dec = int(num_dec)
 
-        baht = num_to_thaiword(num_int)
-        if baht:
+        if baht := num_to_thaiword(num_int):
             ret = "".join([ret, baht, "บาท"])
 
         satang = num_to_thaiword(num_dec)
@@ -114,6 +113,6 @@ def num_to_thaiword(number: int) -> str:
         output = output.replace(search, replac)
 
     if number_temp < 0:
-        output = "ลบ" + output
+        output = f"ลบ{output}"
 
     return output

@@ -133,14 +133,14 @@ def reign_year_to_ad(reign_year: int, reign: int) -> int:
             reign_year_to_ad(1, 9))
         # output: The 4th reign year of the King Rama X is in 1946
     """
-    if int(reign) == 10:
-        ad = int(reign_year) + 2015
-    elif int(reign) == 9:
-        ad = int(reign_year) + 1945
-    elif int(reign) == 8:
-        ad = int(reign_year) + 1928
-    elif int(reign) == 7:
-        ad = int(reign_year) + 1924
+    if reign == 10:
+        ad = reign_year + 2015
+    elif reign == 7:
+        ad = reign_year + 1924
+    elif reign == 8:
+        ad = reign_year + 1928
+    elif reign == 9:
+        ad = reign_year + 1945
     return ad
 
 

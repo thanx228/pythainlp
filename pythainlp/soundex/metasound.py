@@ -61,11 +61,7 @@ def metasound(text: str, length: int = 4) -> str:
         return ""
 
     # keep only consonants and thanthakhat
-    chars = []
-    for ch in text:
-        if ch in _CONS_THANTHAKHAT:
-            chars.append(ch)
-
+    chars = [ch for ch in text if ch in _CONS_THANTHAKHAT]
     # remove karan (thanthakhat and a consonant before it)
     i = 0
     while i < len(chars):

@@ -53,10 +53,11 @@ def _keep(
         return False
 
     word = word_freq[0]
-    if not (word and min_len <= len(word) <= max_len and word[0] != "."):
-        return False
-
-    return dict_filter(word)
+    return (
+        dict_filter(word)
+        if (word and min_len <= len(word) <= max_len and word[0] != ".")
+        else False
+    )
 
 
 def _edits1(word: str) -> Set[str]:
@@ -76,7 +77,7 @@ def _edits2(word: str) -> Set[str]:
     """
     Returns a set of words with edit distance of 2 from the input word
     """
-    return set(e2 for e1 in _edits1(word) for e2 in _edits1(e1))
+    return {e2 for e1 in _edits1(word) for e2 in _edits1(e1)}
 
 
 def _convert_custom_dict(
@@ -92,7 +93,7 @@ def _convert_custom_dict(
     Converts a custom dictionary to a list of (str, int) tuples
     """
     if isinstance(custom_dict, dict):
-        custom_dict = [(word, freq) for word, freq in custom_dict.items()]
+        custom_dict = list(custom_dict.items())
 
     i = iter(custom_dict)
     first_member = next(i)
@@ -225,7 +226,7 @@ class NorvigSpellChecker:
             checker.known([])
             # output: []
         """
-        return list(w for w in words if w in self.__WORDS)
+        return [w for w in words if w in self.__WORDS]
 
     def prob(self, word: str) -> float:
         """

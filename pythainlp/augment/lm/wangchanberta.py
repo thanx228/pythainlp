@@ -38,7 +38,7 @@ class Thai2transformersAug:
         if len(sent) < num_replace_tokens:
             num_replace_tokens = len(sent)
         masked_text = self.input_text
-        for i in range(num_replace_tokens):
+        for _ in range(num_replace_tokens):
             replace_token = [
                 sent.pop(random.randrange(len(sent))) for _ in range(1)
             ][0]

@@ -42,9 +42,7 @@ class ThaiNameTagger:
             grouped_entities=self.grouped_entities)
 
     def _IOB(self, tag):
-        if tag != "O":
-            return "B-"+tag
-        return "O"
+        return f"B-{tag}" if tag != "O" else "O"
 
     def _clear_tag(self, tag):
         return tag.replace('B-', '').replace('I-', '')
@@ -99,35 +97,36 @@ class ThaiNameTagger:
         if self.sent_ner[0][0] == '' and len(self.sent_ner) > 1:
             self.sent_ner = self.sent_ner[1:]
         for idx, (word, ner) in enumerate(self.sent_ner):
-            if idx > 0 and ner.startswith("B-"):
-                if (
-                    self._clear_tag(ner) == self._clear_tag(
-                        self.sent_ner[idx-1][1]
-                    )
-                ):
-                    self.sent_ner[idx] = (word, ner.replace('B-', 'I-'))
-        if tag:
-            temp = ""
-            sent = ""
-            for idx, (word, ner) in enumerate(self.sent_ner):
-                if ner.startswith("B-") and temp != "":
-                    sent += "</" + temp + ">"
-                    temp = ner[2:]
-                    sent += "<" + temp + ">"
-                elif ner.startswith("B-"):
-                    temp = ner[2:]
-                    sent += "<" + temp + ">"
-                elif ner == "O" and temp != "":
-                    sent += "</" + temp + ">"
-                    temp = ""
-                sent += word
-
-                if idx == len(self.sent_ner) - 1 and temp != "":
-                    sent += "</" + temp + ">"
-
-            return sent
-        else:
+            if (
+                idx > 0
+                and ner.startswith("B-")
+                and (
+                    self._clear_tag(ner)
+                    == self._clear_tag(self.sent_ner[idx - 1][1])
+                )
+            ):
+                self.sent_ner[idx] = (word, ner.replace('B-', 'I-'))
+        if not tag:
             return self.sent_ner
+        temp = ""
+        sent = ""
+        for idx, (word, ner) in enumerate(self.sent_ner):
+            if ner.startswith("B-") and temp != "":
+                sent += f"</{temp}>"
+                temp = ner[2:]
+                sent += f"<{temp}>"
+            elif ner.startswith("B-"):
+                temp = ner[2:]
+                sent += f"<{temp}>"
+            elif ner == "O" and temp != "":
+                sent += f"</{temp}>"
+                temp = ""
+            sent += word
+
+            if idx == len(self.sent_ner) - 1 and temp != "":
+                sent += f"</{temp}>"
+
+        return sent
 
 
 def segment(text: str) -> List[str]:
@@ -138,7 +137,4 @@ def segment(text: str) -> List[str]:
     :return: list of subwords
     :rtype: list[str]
     """
-    if not text or not isinstance(text, str):
-        return []
-
-    return _tokenizer.tokenize(text)
+    return _tokenizer.tokenize(text) if text and isinstance(text, str) else []

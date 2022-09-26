@@ -6,6 +6,7 @@ Transliterating Thai text with ISO 11940
     * `Wikipedia \
         <https://en.wikipedia.org/wiki/ISO_11940>`_
 """
+
 _consonants = {
     "ก": "k",
     "ข": "k̄h",
@@ -111,12 +112,7 @@ _punctuation_and_digits = {
     "๙": "9"
 }
 
-_all_dict = {
-    **_consonants,
-    **_vowels,
-    **_tone_marks,
-    **_punctuation_and_digits
-}
+_all_dict = _consonants | _vowels | _tone_marks | _punctuation_and_digits
 _list_k = _all_dict.keys()
 
 
@@ -126,10 +122,4 @@ def transliterate(word: str) -> str:
     :param str text: Thai text to be transliterated.
     :return: A string of IPA indicating how the text should be pronounced.
     """
-    _new = ""
-    for i in word:
-        if i in _list_k:
-            _new += _all_dict[i]
-        else:
-            _new += i
-    return _new
+    return "".join(_all_dict[i] if i in _list_k else i for i in word)

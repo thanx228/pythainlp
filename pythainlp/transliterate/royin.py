@@ -162,19 +162,14 @@ def _replace_consonants(word: str, consonants: str) -> str:
             j += 1
         elif word[i] not in _CONSONANTS:  # word[i] is not a Thai consonant.
             mod_chars.append(word[i])
-        elif (
-            len(mod_chars) == 0 and word[i] == _HO_HIP and len(consonants) != 1
-        ):  # Skip HO HIP except that HO HIP is the only one consonant
+        elif not mod_chars and word[i] == _HO_HIP and len(consonants) != 1:  # Skip HO HIP except that HO HIP is the only one consonant
             j += 1
-        elif (
-            len(mod_chars) == 0
-        ):  # The first character must be an initial consonant.
+        elif not mod_chars:  # The first character must be an initial consonant.
             mod_chars.append(_CONSONANTS[consonants[j]][0])
             j += 1
         elif word[i:] == _DOUBLE_RO_RUA:  # Double RO RUA is in end of word
             skip = True
-            mod_chars.append("a")
-            mod_chars.append("n")
+            mod_chars.extend(("a", "n"))
             j += 1
         elif word[i : i + 2] == _DOUBLE_RO_RUA:
             skip = True

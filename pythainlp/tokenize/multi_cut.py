@@ -61,7 +61,7 @@ def _multicut(
                 yield w
             elif p_ < p2:
                 for path in serialize(p_, p2):
-                    yield w + "/" + path
+                    yield f"{w}/{path}"
 
     q = {0}
     last_p = 0  # last position for yield
@@ -107,13 +107,13 @@ def mmcut(text: str) -> List[str]:
 
 
 def _combine(ww: List[LatticeString]) -> Iterator[str]:
-    if ww == []:
+    if not ww:
         yield ""
     else:
         w = ww[0]
         for tail in _combine(ww[1:]):
             if w.unique:
-                yield w + "|" + tail
+                yield f"{w}|{tail}"
             else:
                 for m in w.multi:
                     yield m.replace("/", "|") + "|" + tail

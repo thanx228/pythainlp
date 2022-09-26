@@ -57,11 +57,7 @@ def spell_sent(list_words: List[str], max_edit_distance: int = 2) -> List[str]:
             max_edit_distance=max_edit_distance
         ))
     ]
-    list_new = []
-    for i in _temp:
-        list_new.append(i)
-
-    return list_new
+    return list(_temp)
 
 
 def correct_sent(list_words: List[str], max_edit_distance=1) -> List[str]:

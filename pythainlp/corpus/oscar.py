@@ -26,7 +26,7 @@ def word_freqs() -> List[Tuple[str, int]]:
     word_freqs = []
     _path = get_corpus_path(_FILENAME)
     with open(_path, "r", encoding="utf-8-sig") as f:
-        _data = [i for i in f.readlines()]
+        _data = list(f.readlines())
         del _data[0]
         for line in _data:
             _temp = line.strip().split(",")
@@ -46,7 +46,7 @@ def unigram_word_freqs() -> defaultdict:
     _path = get_corpus_path(_FILENAME)
     _word_freqs = defaultdict(int)
     with open(_path, "r", encoding="utf-8-sig") as fh:
-        _data = [i for i in fh.readlines()]
+        _data = list(fh.readlines())
         del _data[0]
         for i in _data:
             _temp = i.strip().split(",")

@@ -103,7 +103,7 @@ class NER:
                 """wangchanberta is not support part-of-speech tag.
                 It have not part-of-speech tag in output."""
             )
-        if self.name_engine == "wangchanberta" or self.name_engine == "lst20_onnx":
+        if self.name_engine in ["wangchanberta", "lst20_onnx"]:
             return self.engine.get_ner(text, tag=tag)
         else:
             return self.engine.get_ner(text, tag=tag, pos=pos)

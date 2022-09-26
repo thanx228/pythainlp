@@ -31,43 +31,50 @@ def puan(word: str, show_pronunciation: bool = True) -> str:
     word = pronunciate(word, engine="w2p")
     _list_char = []
     _list_pron = word.split('-')
-    _mix_list = ""
     if len(_list_pron) == 1:
         return word
-    if show_pronunciation:
-        _mix_list = "-"
+    _mix_list = "-" if show_pronunciation else ""
     for i in _list_pron:
         for j in i:
             if j in _list_consonants:
                 _list_char.append(j)
                 break
-            elif "ห" == j and "หฺ" not in i and len(i) == 2:
+            elif j == "ห" and "หฺ" not in i and len(i) == 2:
                 _list_char.append(j)
                 break
 
     list_w_char = list(zip(_list_pron, _list_char))
     _list_w = []
     if len(list_w_char) == 2:
-        _list_w.append(
-            list_w_char[1][0].replace(list_w_char[1][1], list_w_char[0][1], 1)
+        _list_w.extend(
+            (
+                list_w_char[1][0].replace(
+                    list_w_char[1][1], list_w_char[0][1], 1
+                ),
+                list_w_char[0][0].replace(
+                    list_w_char[0][1], list_w_char[1][1], 1
+                ),
+            )
         )
-        _list_w.append(
-            list_w_char[0][0].replace(list_w_char[0][1], list_w_char[1][1], 1)
-        )
+
     elif len(list_w_char) == 3:
-        _list_w.append(_list_pron[0])
-        _list_w.append(
-            list_w_char[2][0].replace(list_w_char[2][1], list_w_char[1][1], 1)
+        _list_w.extend(
+            (
+                _list_pron[0],
+                list_w_char[2][0].replace(
+                    list_w_char[2][1], list_w_char[1][1], 1
+                ),
+                list_w_char[1][0].replace(
+                    list_w_char[1][1], list_w_char[2][1], 1
+                ),
+            )
         )
-        _list_w.append(list_w_char[1][0].replace(
-            list_w_char[1][1], list_w_char[2][1], 1)
-        )
+
     else:  # > 3 syllables
         _list_w.append(
             _list_pron[0].replace(list_w_char[0][1], list_w_char[-1][1], 1)
         )
-        for i in range(1, len(list_w_char)-1):
-            _list_w.append(_list_pron[i])
+        _list_w.extend(_list_pron[i] for i in range(1, len(list_w_char)-1))
         _list_w.append(_list_pron[-1].replace(
             list_w_char[-1][1], list_w_char[0][1], 1)
         )

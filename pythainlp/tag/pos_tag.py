@@ -116,9 +116,7 @@ def pos_tag(
             )
         )
 
-    word_tags = tag_(words, corpus=corpus)
-
-    return word_tags
+    return tag_(words, corpus=corpus)
 
 
 def pos_tag_sents(
@@ -166,7 +164,8 @@ def pos_tag_sents(
         #   ('ขา', 'NOUN')], [('นก', 'NOUN'), ('บิน', 'VERB'),
         #   ('กลับ', 'VERB'), ('รัง', 'NOUN')]]
     """
-    if not sentences:
-        return []
-
-    return [pos_tag(sent, engine=engine, corpus=corpus) for sent in sentences]
+    return (
+        [pos_tag(sent, engine=engine, corpus=corpus) for sent in sentences]
+        if sentences
+        else []
+    )

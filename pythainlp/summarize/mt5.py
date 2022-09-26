@@ -20,17 +20,17 @@ class mT5Summarizer:
             pretrained_mt5_model_name: str = None):
         model_name = ""
         if pretrained_mt5_model_name is None:
-            if model_size not in ["small", "base", "large", "xl", "xxl"]:
+            if model_size in {"small", "base", "large", "xl", "xxl"}:
+                model_name = f'google/mt5-{model_size}'
+            else:
                 raise ValueError(
                     f"""model_size \"{model_size}\" not found.
                     It might be a typo; if not, please consult our document."""
                 )
-            model_name = f'google/mt5-{model_size}'
+        elif pretrained_mt5_model_name == CPE_KMUTT_THAI_SENTENCE_SUM:
+            model_name = f'thanathorn/{CPE_KMUTT_THAI_SENTENCE_SUM}'
         else:
-            if pretrained_mt5_model_name == CPE_KMUTT_THAI_SENTENCE_SUM:
-                model_name = f'thanathorn/{CPE_KMUTT_THAI_SENTENCE_SUM}'
-            else:
-                model_name = pretrained_mt5_model_name
+            model_name = pretrained_mt5_model_name
         self.model_name = model_name
         self.model = MT5ForConditionalGeneration.from_pretrained(
             model_name
@@ -47,9 +47,9 @@ class mT5Summarizer:
     def summarize(self, text: str) -> List[str]:
         preprocess_text = text.strip().replace("\n", "")
         if self.model_name == f'thanathorn/{CPE_KMUTT_THAI_SENTENCE_SUM}':
-            t5_prepared_Text = "simplify: "+preprocess_text
+            t5_prepared_Text = f"simplify: {preprocess_text}"
         else:
-            t5_prepared_Text = "summarize: "+preprocess_text
+            t5_prepared_Text = f"summarize: {preprocess_text}"
         tokenized_text = self.tokenizer.encode(
             t5_prepared_Text,
             return_tensors="pt"

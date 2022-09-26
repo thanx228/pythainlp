@@ -34,9 +34,7 @@ def isthaichar(ch: str) -> bool:
         # output: True
     """
     ch_val = ord(ch)
-    if ch_val >= _TH_FIRST_CHAR_ASCII and ch_val <= _TH_LAST_CHAR_ASCII:
-        return True
-    return False
+    return ch_val >= _TH_FIRST_CHAR_ASCII and ch_val <= _TH_LAST_CHAR_ASCII
 
 
 def isthai(text: str, ignore_chars: str = ".") -> bool:
@@ -71,10 +69,7 @@ def isthai(text: str, ignore_chars: str = ".") -> bool:
     if not ignore_chars:
         ignore_chars = ""
 
-    for ch in text:
-        if ch not in ignore_chars and not isthaichar(ch):
-            return False
-    return True
+    return not any(ch not in ignore_chars and not isthaichar(ch) for ch in text)
 
 
 def countthai(text: str, ignore_chars: str = _DEFAULT_IGNORE_CHARS) -> float:
@@ -122,10 +117,7 @@ def countthai(text: str, ignore_chars: str = _DEFAULT_IGNORE_CHARS) -> float:
 
     num_count = len(text) - num_ignore
 
-    if num_count == 0:
-        return 0.0
-
-    return (num_thai / num_count) * 100
+    return 0.0 if num_count == 0 else (num_thai / num_count) * 100
 
 
 def display_thai_char(ch: str) -> str:
@@ -152,7 +144,7 @@ def display_thai_char(ch: str) -> str:
         or ch in "\u0e33\u0e4c\u0e4d\u0e4e"
     ):
         # last condition is Sra Aum, Thanthakhat, Nikhahit, Yamakkan
-        return "_" + ch
+        return f"_{ch}"
     else:
         return ch
 

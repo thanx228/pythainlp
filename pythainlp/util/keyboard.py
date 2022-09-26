@@ -203,21 +203,19 @@ def thai_keyboard_dist(c1: str, c2: str, shift_dist: float = 0.0) -> float:
         # output: 0.5
     """
     def get_char_coord(
-        ch: str, layouts=[TIS_820_2531_MOD, TIS_820_2531_MOD_SHIFT]
-    ):
+            ch: str, layouts=[TIS_820_2531_MOD, TIS_820_2531_MOD_SHIFT]
+        ):
         for layout in layouts:
             for row in layout:
                 if ch in row:
                     r = layout.index(row)
                     c = row.index(ch)
                     return (r, c)
-        raise ValueError(ch + " not found in given keyboard layout")
+        raise ValueError(f"{ch} not found in given keyboard layout")
 
     coord1 = get_char_coord(c1)
     coord2 = get_char_coord(c2)
     distance = (
         (coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2
     ) ** (0.5)
-    if distance == 0 and c1 != c2:
-        return shift_dist
-    return distance
+    return shift_dist if distance == 0 and c1 != c2 else distance

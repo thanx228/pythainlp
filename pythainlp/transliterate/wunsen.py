@@ -120,24 +120,22 @@ class WunsenTransliterate:
                 self.jp_input = None
                 self.zh_sandhi = zh_sandhi
                 self.system = system
-            elif lang == "ko" or lang == "vi":
+            elif lang in {"ko", "vi"}:
                 self.jp_input = None
                 self.zh_sandhi = None
                 self.system = None
             else:
-                raise NotImplementedError(
-                    "The %s language is not implemented." % lang
-                )
+                raise NotImplementedError(f"The {lang} language is not implemented.")
             self.lang = lang
             input_lang = lang
             if input_lang == "jp":
                 input_lang = "ja"
             setting = {}
             if self.jp_input is not None:
-                setting.update({"input": self.jp_input})
+                setting["input"] = self.jp_input
             if self.zh_sandhi is not None:
-                setting.update({"option": {"sandhi": self.zh_sandhi}})
+                setting["option"] = {"sandhi": self.zh_sandhi}
             if self.system is not None:
-                setting.update({"system": self.system})
+                setting["system"] = self.system
             self.thap_value = ThapSap(input_lang, **setting)
         return self.thap_value.thap(text)

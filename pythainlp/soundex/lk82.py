@@ -93,7 +93,7 @@ def lk82(text: str) -> str:
             res.append(c.translate(_TRANS2))
         elif c == "\u0e38":  # 9. สระอุ / Sara U
             i_v = i
-            if i == 0 or (text[i - 1] not in "ตธ"):
+            if i_v == 0 or text[i_v - 1] not in "ตธ":
                 res.append(c.translate(_TRANS2))
             else:
                 res.append("")
@@ -113,9 +113,6 @@ def lk82(text: str) -> str:
 
     # 13. remove repetitives
     res2 = [res[0]]
-    for i in range(1, len(res)):
-        if res[i] != res[i - 1]:
-            res2.append(res[i])
-
+    res2.extend(res[i] for i in range(1, len(res)) if res[i] != res[i - 1])
     # 14. fill zeros
     return ("".join(res2) + "0000")[:5]

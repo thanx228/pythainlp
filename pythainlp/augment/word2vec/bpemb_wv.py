@@ -56,8 +56,6 @@ class BPEmbAug:
         self.temp = self.aug.augment(self.sentence, n_sent, p=p)
         self.temp_new = []
         for i in self.temp:
-            self.t = ""
-            for j in i:
-                self.t += j.replace('▁', '')
+            self.t = "".join(j.replace('▁', '') for j in i)
             self.temp_new.append(self.t)
         return self.temp_new

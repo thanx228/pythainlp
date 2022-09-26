@@ -91,21 +91,17 @@ class Unigram:
         prob: float,
         duplicate: bool = False
     ):
-        self.words = []
-        self.words.append(text)
+        self.words = [text]
         self._word_list = list(self._word_prob.keys())
-        if N > len(self._word_list):
-            N = len(self._word_list)
-        for i in range(N):
+        N = min(N, len(self._word_list))
+        for _ in range(N):
             self._word = random.choice(self._word_list)
-            if duplicate is False:
+            if not duplicate:
                 while self._word in self.words:
                     self._word = random.choice(self._word_list)
             self.words.append(self._word)
 
-        if output_str:
-            return "".join(self.words)
-        return self.words
+        return "".join(self.words) if output_str else self.words
 
 
 class Bigram:
@@ -169,33 +165,30 @@ class Bigram:
         if start_seq is None:
             start_seq = random.choice(self.words)
         self.late_word = start_seq
-        self.list_word = []
-        self.list_word.append(start_seq)
-
-        for i in range(N):
-            if duplicate:
-                self._temp = [
-                    j for j in self.bi_keys if j[0] == self.late_word
-                ]
-            else:
-                self._temp = [
-                    j for j in self.bi_keys
+        self.list_word = [start_seq]
+        for _ in range(N):
+            self._temp = (
+                [j for j in self.bi_keys if j[0] == self.late_word]
+                if duplicate
+                else [
+                    j
+                    for j in self.bi_keys
                     if j[0] == self.late_word and j[1] not in self.list_word
                 ]
+            )
+
             self._probs = [
                 self.prob(
                     self.late_word, next_word[-1]
                 ) for next_word in self._temp
             ]
             self._p2 = [j for j in self._probs if j >= prob]
-            if len(self._p2) == 0:
+            if not self._p2:
                 break
             self.items = self._temp[self._probs.index(random.choice(self._p2))]
             self.late_word = self.items[-1]
             self.list_word.append(self.late_word)
-        if output_str:
-            return ''.join(self.list_word)
-        return self.list_word
+        return ''.join(self.list_word) if output_str else self.list_word
 
 
 class Trigram:
@@ -263,24 +256,23 @@ class Trigram:
         if start_seq is None:
             start_seq = random.choice(self.bi_keys)
         self.late_word = start_seq
-        self.list_word = []
-        self.list_word.append(start_seq)
-
-        for i in range(N):
-            if duplicate:
-                self._temp = [
-                    j for j in self.ti_keys if j[:2] == self.late_word
-                ]
-            else:
-                self._temp = [
-                    j for j in self.ti_keys
+        self.list_word = [start_seq]
+        for _ in range(N):
+            self._temp = (
+                [j for j in self.ti_keys if j[:2] == self.late_word]
+                if duplicate
+                else [
+                    j
+                    for j in self.ti_keys
                     if j[:2] == self.late_word and j[1:] not in self.list_word
                 ]
+            )
+
             self._probs = [
                 self.prob(word[0], word[1], word[2]) for word in self._temp
             ]
             self._p2 = [j for j in self._probs if j >= prob]
-            if len(self._p2) == 0:
+            if not self._p2:
                 break
             self.items = self._temp[self._probs.index(random.choice(self._p2))]
             self.late_word = self.items[1:]
@@ -290,6 +282,4 @@ class Trigram:
             for j in i:
                 if j not in self.listdata:
                     self.listdata.append(j)
-        if output_str:
-            return ''.join(self.listdata)
-        return self.listdata
+        return ''.join(self.listdata) if output_str else self.listdata

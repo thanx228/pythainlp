@@ -287,8 +287,7 @@ class Seq2Seq(nn.Module):
         assert encoder.hidden_size == decoder.hidden_size
 
     def create_mask(self, source_seq):
-        mask = source_seq != self.pad_idx
-        return mask
+        return source_seq != self.pad_idx
 
     def forward(
         self, source_seq, source_seq_len, target_seq, teacher_forcing_ratio=0.5

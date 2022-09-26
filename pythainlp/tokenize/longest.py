@@ -47,57 +47,50 @@ class LongestMatchTokenizer(object):
     @staticmethod
     def __search_nonthai(text: str) -> Union[None, str]:
         match = _RE_NONTHAI.search(text)
-        if match.group(0):
-            return match.group(0).lower()
-        return None
+        return match.group(0).lower() if match.group(0) else None
 
     def __is_next_word_valid(self, text: str, begin_pos: int) -> bool:
-        text = text[begin_pos:].strip()
+        if text := text[begin_pos:].strip():
+            return (
+                True
+                if (match := self.__search_nonthai(text))
+                else any(text[:pos] in self.__trie for pos in range(len(text) + 1))
+            )
 
-        if not text:
+        else:
             return True
-
-        match = self.__search_nonthai(text)
-        if match:
-            return True
-
-        for pos in range(len(text) + 1):
-            if text[0:pos] in self.__trie:
-                return True
-
-        return False
 
     def __longest_matching(self, text: str, begin_pos: int) -> str:
         text = text[begin_pos:]
 
-        match = self.__search_nonthai(text)
-        if match:
+        if match := self.__search_nonthai(text):
             return match
 
         word = None
         word_valid = None
 
         for pos in range(len(text) + 1):
-            w = text[0:pos]
+            w = text[:pos]
             if w in self.__trie:
                 word = w
                 if self.__is_next_word_valid(text, pos):
                     word_valid = w
 
-        if word:
-            if not word_valid:
-                word_valid = word
-
-            try:
-                len_word_valid = len(word_valid)
-                if text[len_word_valid] in _TRAILING_CHAR:
-                    return text[0 : len_word_valid + 1]
-                else:
-                    return word_valid
-            except BaseException:
-                return word_valid
-        else:
+        if not word:
             return ""
+        if not word_valid:
+            word_valid = word
+
+        try:
+            len_word_valid = len(word_valid)
+            return (
+                text[: len_word_valid + 1]
+                if text[len_word_valid] in _TRAILING_CHAR
+                else word_valid
+            )
+
+        except BaseException:
+            return word_valid
 
     def __segment(self, text: str):
         begin_pos = 0
@@ -105,8 +98,15 @@ class LongestMatchTokenizer(object):
         tokens = []
         token_statuses = []
         while begin_pos < len_text:
-            match = self.__longest_matching(text, begin_pos)
-            if not match:
+            if match := self.__longest_matching(text, begin_pos):
+                if begin_pos != 0 and text[begin_pos - 1] in _REAR_DEP_CHAR:
+                    tokens[-1] += match
+                else:
+                    tokens.append(match)
+                    token_statuses.append(_KNOWN)
+                begin_pos += len(match)
+
+            else:
                 if (
                     begin_pos != 0
                     and not text[begin_pos].isspace()
@@ -123,19 +123,10 @@ class LongestMatchTokenizer(object):
                     tokens.append(text[begin_pos])
                     token_statuses.append(_UNKNOWN)
                 begin_pos += 1
-            else:
-                if begin_pos != 0 and text[begin_pos - 1] in _REAR_DEP_CHAR:
-                    tokens[-1] += match
-                else:
-                    tokens.append(match)
-                    token_statuses.append(_KNOWN)
-                begin_pos += len(match)
-
         return tokens
 
     def tokenize(self, text: str) -> List[str]:
-        tokens = self.__segment(text)
-        return tokens
+        return self.__segment(text)
 
 
 def segment(

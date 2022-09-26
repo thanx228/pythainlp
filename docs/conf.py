@@ -23,7 +23,7 @@ project = "PyThaiNLP"
 copyright = "2019, pythainlp_builders"
 author = "pythainlp_builders"
 
-curyear = datetime.today().year
+curyear = datetime.now().year
 copyright = f"2017-{curyear}, {project} (Apache Software License 2.0)"
 
 

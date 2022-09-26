@@ -43,36 +43,33 @@ def list_to_string(list:List[str]) -> str:
 
 def middle_cut(sentences:List[str]) -> List[str]:
     new_text = ""
+    fixed_text_lenth = 20
+
     for sentence in sentences:
         sentence_size = len(word_tokenize(sentence, keep_whitespace=False))
 
-        for k in range(0, len(sentence)):
+        for k in range(len(sentence)):
             if k == 0 or k + 1 >= len(sentence):
                 continue
             if sentence[k].isdigit() and sentence[k - 1] == " ":
                 sentence = sentence[:k - 1] + sentence[k:]
-            if k + 2 <= len(sentence):
-                if sentence[k].isdigit() and sentence[k + 1] == " ":
-                    sentence = sentence[:k + 1] + sentence[k + 2:]
-
-        fixed_text_lenth = 20
+            if (
+                k + 2 <= len(sentence)
+                and sentence[k].isdigit()
+                and sentence[k + 1] == " "
+            ):
+                sentence = sentence[:k + 1] + sentence[k + 2:]
 
         if sentence_size > fixed_text_lenth:
             partition = math.floor(sentence_size / fixed_text_lenth)
             tokens = word_tokenize(sentence, keep_whitespace=True)
-            for i in range(0, partition):
+            for i in range(partition):
                 middle_space = (sentence_size / (partition+1)*(i+1))
-                white_space_index = []
-                white_space_diff = {}
-
-                for j in range(len(tokens)):
-                    if tokens[j] == ' ':
-                        white_space_index.append(j)
-
-                for white_space in white_space_index:
-                    white_space_diff.update({white_space: abs(white_space - middle_space)})
-
-                if len(white_space_diff) > 0:
+                white_space_index = [j for j in range(len(tokens)) if tokens[j] == ' ']
+                if white_space_diff := {
+                    white_space: abs(white_space - middle_space)
+                    for white_space in white_space_index
+                }:
                     min_diff = min(white_space_diff.items(), key=operator.itemgetter(1))
                     tokens.pop(min_diff[0])
                     tokens.insert(min_diff[0], "<stop>")

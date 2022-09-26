@@ -127,12 +127,10 @@ def postype2wordnet(pos: str, corpus: str):
         * *lst20* - LST20 Corpus
         * *orchid* - Orchid Corpus
     """
-    if corpus not in ['lst20', 'orchid']:
-        return None
-    if corpus == 'lst20':
-        return lst20[pos]
+    if corpus in {'lst20', 'orchid'}:
+        return lst20[pos] if corpus == 'lst20' else orchid[pos]
     else:
-        return orchid[pos]
+        return None
 
 
 class WordNetAug:
@@ -168,8 +166,9 @@ class WordNetAug:
                 self.list_synsets = wordnet.synsets(word)
 
         for self.synset in wordnet.synsets(word):
-            for self.syn in self.synset.lemma_names(lang='tha'):
-                self.synonyms.append(self.syn)
+            self.synonyms.extend(
+                self.syn for self.syn in self.synset.lemma_names(lang='tha')
+            )
 
         self.synonyms_without_duplicates = list(
             OrderedDict.fromkeys(self.synonyms)
@@ -210,7 +209,6 @@ class WordNetAug:
              ('เรา', 'ชอบ', 'ไปยัง', 'ร.ร.'),
              ('เรา', 'ชอบ', 'ไปยัง', 'รร.')]
         """
-        new_sentences = []
         self.list_words = tokenize(sentence)
         self.list_synonym = []
         self.p_all = 1
@@ -231,8 +229,5 @@ class WordNetAug:
                 else:
                     self.list_synonym.append(self.temp)
                     self.p_all *= len(self.temp)
-        if max_syn_sent > self.p_all:
-            max_syn_sent = self.p_all
-        for x in list(itertools.product(*self.list_synonym))[0:max_syn_sent]:
-            new_sentences.append(x)
-        return new_sentences
+        max_syn_sent = min(max_syn_sent, self.p_all)
+        return list(list(itertools.product(*self.list_synonym))[:max_syn_sent])

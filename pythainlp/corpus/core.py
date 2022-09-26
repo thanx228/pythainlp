@@ -50,16 +50,14 @@ def get_corpus_db_detail(name: str, version: str = None) -> dict:
     with open(corpus_db_path(), "r", encoding="utf-8-sig") as f:
         local_db = json.load(f)
 
-    if version is None:
-        for corpus in local_db["_default"].values():
+    for corpus in local_db["_default"].values():
+        if version is None:
             if corpus["name"] == name:
                 return corpus
-    else:
-        for corpus in local_db["_default"].values():
-            if corpus["name"] == name and corpus["version"] == version:
-                return corpus
+        elif corpus["name"] == name and corpus["version"] == version:
+            return corpus
 
-    return dict()
+    return {}
 
 
 def path_pythainlp_corpus(filename: str) -> str:
@@ -281,15 +279,11 @@ def _version2int(v: str) -> int:
     v_list = v.split(".")
     if len(v_list) < 3:
         v_list.append('0')
-    v_new = ""
-    for i, value in enumerate(v_list):
-        if i != 0:
-            if len(value) < 2:
-                v_new += "0"+value
-            else:
-                v_new += value
-        else:
-            v_new += value
+    v_new = "".join(
+        f"0{value}" if i != 0 and len(value) < 2 else value
+        for i, value in enumerate(v_list)
+    )
+
     return int(v_new)
 
 
@@ -314,13 +308,13 @@ def _check_version(cause: str) -> bool:
     elif cause.startswith(">") and '<' not in cause:
         temp = cause.replace(">", '')
         check = v > _version2int(temp)
-    elif cause.startswith(">=") and '<=' not in cause and '<' in cause:
+    elif cause.startswith(">=") and '<=' not in cause:
         temp = cause.replace(">=", '').split('<')
         check = v >= _version2int(temp[0]) and v < _version2int(temp[1])
-    elif cause.startswith(">=") and '<=' in cause:
+    elif cause.startswith(">="):
         temp = cause.replace(">=", '').split('<=')
         check = v >= _version2int(temp[0]) and v <= _version2int(temp[1])
-    elif cause.startswith(">") and '<' in cause:
+    elif cause.startswith(">"):
         temp = cause.replace(">", '').split('<')
         check = v > _version2int(temp[0]) and v < _version2int(temp[1])
     elif cause.startswith("<="):
@@ -401,13 +395,14 @@ def download(
             return False
         corpus_versions = corpus["versions"][version]
         file_name = corpus_versions["filename"]
-        found = ""
-        for i, item in local_db["_default"].items():
-            # Do not check version here
-            if item["name"] == name:
-                # Record corpus no. if found in local database
-                found = i
-                break
+        found = next(
+            (
+                i
+                for i, item in local_db["_default"].items()
+                if item["name"] == name
+            ),
+            "",
+        )
 
         # If not found in local, download
         if force or not found:
@@ -424,14 +419,14 @@ def download(
 
             if corpus_versions["is_tar_gz"] == "True":
                 is_folder = True
-                foldername = name+"_"+str(version)
+                foldername = f"{name}_{str(version)}"
                 if not os.path.exists(get_full_data_path(foldername)):
                     os.mkdir(get_full_data_path(foldername))
                 with tarfile.open(get_full_data_path(file_name)) as tar:
                     tar.extractall(path=get_full_data_path(foldername))
             elif corpus_versions["is_zip"] == "True":
                 is_folder = True
-                foldername = name+"_"+str(version)
+                foldername = f"{name}_{str(version)}"
                 if not os.path.exists(get_full_data_path(foldername)):
                     os.mkdir(get_full_data_path(foldername))
                 with zipfile.ZipFile(
@@ -463,8 +458,6 @@ def download(
 
             with open(corpus_db_path(), "w", encoding="utf-8") as f:
                 json.dump(local_db, f, ensure_ascii=False)
-        # Check if versions match if the corpus is found in local database
-        # but a re-download is not forced
         else:
             current_ver = local_db["_default"][found]["version"]
 
@@ -513,11 +506,9 @@ def remove(name: str) -> bool:
         return False
     with open(corpus_db_path(), "r", encoding="utf-8-sig") as f:
         db = json.load(f)
-    data = [
+    if data := [
         corpus for corpus in db["_default"].values() if corpus["name"] == name
-    ]
-
-    if data:
+    ]:
         path = get_corpus_path(name)
         if data[0].get("is_folder"):
             os.remove(get_full_data_path(data[0].get("filename")))
